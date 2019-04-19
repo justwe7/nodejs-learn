@@ -1,6 +1,7 @@
 
-function divEscapedContentElement(message) {
-  return $('<div></div>').text(message);
+function divEscapedContentElement(message, noClass) {
+ 
+  return noClass ? $('<div></div>').text(message) : $('<div class="list-group-item list-group-item-action"></div>').text(message);
 }
 
 function divSystemContentElement(message) {
@@ -10,6 +11,9 @@ function divSystemContentElement(message) {
 function processUserInput(chatApp, socket) {
   var message = $('#send-message').val()
     , systemMessage;
+
+    console.log(message);
+    
 
   // 以 / 开头 是聊天命令
   if (message[0] == '/') {
@@ -21,7 +25,7 @@ function processUserInput(chatApp, socket) {
   // 其他非 命令的 广播到其余用户
   } else {
     chatApp.sendMessage($('#room').text(), message);
-    $('#messages').append(divEscapedContentElement(message));
+    $('#messages').append(divEscapedContentElement(message, true));
     $('#messages').scrollTop($('#messages').prop('scrollHeight'));
   }
 
@@ -40,7 +44,7 @@ $(document).ready(function() {
     var message;
 
     if (result.success) {
-      message = 'You are now known as ' + result.name + '.';
+      message = '你在房间昵称是 ' + result.name + '.';
     } else {
       message = result.message;
     }
@@ -50,8 +54,8 @@ $(document).ready(function() {
 
   // Display the results of a room change
   socket.on('joinResult', function(result) {
-    $('#room').text(result.room);
-    $('#messages').append(divSystemContentElement('Room changed.'));
+    $('#room').text('当前聊天室：'+result.room);
+    $('#messages').append(divSystemContentElement('切换房间.'));
   });
 
   // Display received messages
